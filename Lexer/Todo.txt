@@ -1,0 +1,2 @@
+Eliminato else if (character.isDigit...) nei simboli composti (tranne && e ||), e sostituito l'else presente con return Token.valore direttamente.
+Da controllare il nullpointerexception quando non trova un carattere dell'alfabeto.
