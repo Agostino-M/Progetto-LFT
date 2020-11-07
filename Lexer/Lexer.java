@@ -16,9 +16,30 @@ public class Lexer {
   }
 
   public Token lexical_scan(BufferedReader br) {
-    while (peek == ' ' || peek == '\t' || peek == '\n' || peek == '\r') {
+    while (peek == ' ' || peek == '\t' || peek == '\n' || peek == '\r' || peek == '/') {
+      // escludo il controllo del contenuto dei commenti
+      if (peek == '/') {
+        readch(br);
+
+        if (peek == '/') {
+          while (peek != '\n' && peek != (char) -1) {
+            readch(br);
+          }
+        } else if (peek == '*') {
+          while (peek != '\n' && peek != (char) -1) {
+            readch(br);
+            if (peek == '*') {
+              readch(br);
+              if (peek == '/')
+                break;
+            }
+          }
+        }
+      }
+
       if (peek == '\n')
         line++;
+
       readch(br);
     }
 
@@ -27,7 +48,7 @@ public class Lexer {
         peek = ' ';
         return Token.not;
 
-      // ... gestire i casi di (, ), {, }, +, -, *, /, ; ... //
+      // Casi di (, ), {, }, +, -, *, /, ;
       case '(':
         peek = ' ';
         return Token.lpt;
@@ -57,6 +78,7 @@ public class Lexer {
         return Token.mult;
 
       case '/':
+
         peek = ' ';
         return Token.div;
 
@@ -74,7 +96,7 @@ public class Lexer {
           return null;
         }
 
-        // ... gestire i casi di ||, <, >, <=, >=, ==, <>, = ... //
+        // Casi di ||, <, >, <=, >=, ==, <>, =
       case '|':
         readch(br);
         if (peek == '|') {
@@ -116,19 +138,55 @@ public class Lexer {
         return new Token(Tag.EOF);
 
       default:
-        if (Character.isLetter(peek)) {
+        if (Character.isLetter(peek) || peek == '_') {
+          // Caso degli identificatori e delle parole chiave
+          String words = "";
+          while (peek == '_') {
+            words += "_";
+            readch(br);
+            if (peek == (char) -1 || peek == ' ' || peek == '\t' || peek == '\n' || peek == '\r' || peek < 32
+                || peek > 126) {
+              System.err.println("Erroneous character" + " after _ : " + peek);
+              return null;
+            }
+          }
 
-          // ... gestire il caso degli identificatori e delle parole chiave //
+          while (Character.isLetter(peek) || Character.isDigit(peek) || peek == '_') {
+            words += peek;
+            readch(br);
+          }
+          switch (words) {
+            case "cond":
+              return Word.cond;
+            case "when":
+              return Word.when;
+            case "then":
+              return Word.then;
+            case "else":
+              return Word.elsetok;
+            case "while":
+              return Word.whiletok;
+            case "do":
+              return Word.dotok;
+            case "seq":
+              return Word.seq;
+            case "print":
+              return Word.print;
+            case "read":
+              return Word.read;
+            default:
+              return new Word(Tag.ID, words);
+          }
+
         } else if (Character.isDigit(peek)) {
-          // ... gestire il caso dei numeri ... //
+          // Caso dei numeri
           if (peek == '0') {
             readch(br);
 
             if (!Character.isDigit(peek)) {
-              peek = ' ';
               return new NumberTok(Tag.NUM, 0);
             } else {
-              System.err.println("Erroneous character" + " after & : " + peek);
+              System.err.println("Erroneous character" + " after 0 : " + peek);
               return null;
             }
           }
@@ -153,10 +211,9 @@ public class Lexer {
 
   public static void main(String[] args) {
     Lexer lex = new Lexer();
-    String path = "D:/Unito/Secondo anno/Linguaggi Formali e Traduttori/Laboratorio/Esercizi_2/Input.txt"; // il
-                                                                                                           // percorso
-                                                                                                           // del file
-                                                                                                           // da leggere
+    // il percorso del file da leggere
+    String path = "D:/Unito/Secondo anno/Linguaggi Formali e Traduttori/Laboratorio/LFT-Project/LFT-Project/Lexer/Input.txt";
+
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));
       Token tok;
