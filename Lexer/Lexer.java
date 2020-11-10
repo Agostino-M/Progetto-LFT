@@ -26,7 +26,7 @@ public class Lexer {
             readch(br);
           }
         } else if (peek == '*') {
-          while (peek != '\n' && peek != (char) -1) {
+          while (peek != (char) -1) {
             readch(br);
             if (peek == '*') {
               readch(br);
