@@ -35,6 +35,9 @@ public class Lexer {
             }
           }
         }
+        else {
+          return Token.div;
+        }
       }
 
       if (peek == '\n')
