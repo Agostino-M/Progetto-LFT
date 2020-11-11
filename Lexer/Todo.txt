@@ -1,3 +1,0 @@
-Aggiungere caso identificatori: fatto.
-Controllare tutti i casi per gli identificatori (_, lettere, numeri)
-Aggiungere caso commenti: fatto.
