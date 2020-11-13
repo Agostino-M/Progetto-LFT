@@ -34,8 +34,12 @@ public class Lexer {
                 break;
             }
           }
-        }
-        else {
+          if (peek == (char) -1) {
+            System.err.println("Multi line comment never got closed.");
+            return null;
+          }
+
+        } else {
           return Token.div;
         }
       }
@@ -215,7 +219,7 @@ public class Lexer {
   public static void main(String[] args) {
     Lexer lex = new Lexer();
     // il percorso del file da leggere
-    String path = "D:/Unito/Secondo anno/Linguaggi Formali e Traduttori/Laboratorio/LFT-Project/LFT-Project/Lexer/Input.txt";
+    String path = "D:/Unito/Secondo anno/Linguaggi Formali e Traduttori/Laboratorio/LFT-Project/LFT-Project/Input.txt";
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));
