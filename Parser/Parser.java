@@ -32,7 +32,7 @@ public class Parser {
   }
 
   public void start() {
-    System.out.println(look.tag);
+    System.out.println("start: " + look.tag);
     switch (look.tag) {
 
       // <start> → <expr>EOF
@@ -48,10 +48,11 @@ public class Parser {
   }
 
   private void expr() {
+    System.out.println("expr: " + look.tag);
     switch (look.tag) {
 
       // <expr> → <term><exprp>
-      case ')':
+      case '(':
       case Tag.NUM: // verificare che sia corretto
         term();
         exprp();
@@ -63,6 +64,7 @@ public class Parser {
   }
 
   private void exprp() {
+    System.out.println("exprp: " + look.tag);
     switch (look.tag) {
 
       // <exprp> → +<term><exprp>
@@ -78,9 +80,11 @@ public class Parser {
         term();
         exprp();
         break;
+
       // <exprp> → ε
       case Tag.EOF:
       case ')':
+        move();
         break;
 
       default:
@@ -89,9 +93,10 @@ public class Parser {
   }
 
   private void term() {
+    System.out.println("term: " + look.tag);
     switch (look.tag) {
 
-      // <term> → +<fact><termp>
+      // <term> → <fact><termp>
       case '(':
       case Tag.NUM: // verificare che sia corretto
         fact();
@@ -104,6 +109,7 @@ public class Parser {
   }
 
   private void termp() {
+    System.out.println("termp: " + look.tag);
     switch (look.tag) {
 
       // <termp> → *<fact><termp>
@@ -119,10 +125,12 @@ public class Parser {
         fact();
         termp();
         break;
+
       // <termp> → ε
       case Tag.EOF:
       case '+':
       case '-':
+        move();
         break;
 
       default:
@@ -132,6 +140,7 @@ public class Parser {
   }
 
   private void fact() {
+    System.out.println("fact: " + look.tag);
     switch (look.tag) {
 
       // <fact> → <expr>
