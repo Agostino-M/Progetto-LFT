@@ -3,12 +3,12 @@ package Parser;
 import java.io.*;
 import Lexer.*;
 
-public class Parser {
+public class Parser1 {
   private Lexer lex;
   private BufferedReader pbr;
   private Token look;
 
-  public Parser(Lexer l, BufferedReader br) {
+  public Parser1(Lexer l, BufferedReader br) {
     lex = l;
     pbr = br;
     move();
@@ -20,7 +20,7 @@ public class Parser {
   }
 
   void error(String s) {
-    throw new Error("near line " + Lexer.line + ": " + s);
+    throw new Error("near line " + Lexer.line + ": " + s + " token: " + look.tag);
   }
 
   void match(int t) {
@@ -28,45 +28,37 @@ public class Parser {
       if (look.tag != Tag.EOF)
         move();
     } else
-      error("syntax error");
+      error("Syntax Error: instead of " + t + " found");
   }
 
   public void start() {
-    System.out.println("start: " + look.tag);
     switch (look.tag) {
-
       // <start> → <expr>EOF
-      case '(':
-      case Tag.NUM: // verificare che sia corretto
+      case '(', Tag.NUM:
         expr();
         match(Tag.EOF);
         break;
 
       default:
-        error("start");
+        error("Start");
     }
   }
 
   private void expr() {
-    System.out.println("expr: " + look.tag);
     switch (look.tag) {
-
       // <expr> → <term><exprp>
-      case '(':
-      case Tag.NUM: // verificare che sia corretto
+      case '(', Tag.NUM:
         term();
         exprp();
         break;
 
       default:
-        error("expr");
+        error("Expr");
     }
   }
 
   private void exprp() {
-    System.out.println("exprp: " + look.tag);
     switch (look.tag) {
-
       // <exprp> → +<term><exprp>
       case '+':
         match('+');
@@ -82,36 +74,29 @@ public class Parser {
         break;
 
       // <exprp> → ε
-      case Tag.EOF:
-      case ')':
-        move();
+      case Tag.EOF, ')':
         break;
 
       default:
-        error("exprp");
+        error("Exprp");
     }
   }
 
   private void term() {
-    System.out.println("term: " + look.tag);
     switch (look.tag) {
-
       // <term> → <fact><termp>
-      case '(':
-      case Tag.NUM: // verificare che sia corretto
+      case '(', Tag.NUM:
         fact();
         termp();
         break;
 
       default:
-        error("term");
+        error("Term");
     }
   }
 
   private void termp() {
-    System.out.println("termp: " + look.tag);
     switch (look.tag) {
-
       // <termp> → *<fact><termp>
       case '*':
         match('*');
@@ -127,22 +112,16 @@ public class Parser {
         break;
 
       // <termp> → ε
-      case Tag.EOF:
-      case '+':
-      case '-':
-        move();
+      case Tag.EOF, '+', '-', ')':
         break;
 
       default:
-        error("termp");
-
+        error("Termp");
     }
   }
 
   private void fact() {
-    System.out.println("fact: " + look.tag);
     switch (look.tag) {
-
       // <fact> → <expr>
       case '(':
         match('(');
@@ -151,23 +130,24 @@ public class Parser {
         break;
 
       // <fact> → <expr>
-      case Tag.NUM: // verificare che sia corretto
+      case Tag.NUM:
         match(Tag.NUM);
         break;
 
       default:
-        error("fact");
+        error("Fact");
     }
   }
 
   public static void main(String[] args) {
     Lexer lex = new Lexer();
     // il percorso del file da leggere
-    String path = "D:/Unito/Secondo anno/Linguaggi Formali e Traduttori/Laboratorio/LFT-Project/LFT-Project/Input.txt";
+    String path = "Input.txt";
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));
-      Parser parser = new Parser(lex, br);
+      Parser1 parser = new Parser1(lex, br);
+
       parser.start();
       System.out.println("Input OK");
       br.close();

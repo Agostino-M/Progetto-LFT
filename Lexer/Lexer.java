@@ -219,15 +219,17 @@ public class Lexer {
   public static void main(String[] args) {
     Lexer lex = new Lexer();
     // il percorso del file da leggere
-    String path = "D:/Unito/Secondo anno/Linguaggi Formali e Traduttori/Laboratorio/LFT-Project/LFT-Project/Input.txt";
+    String path = "Input.txt";
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));
       Token tok;
+
       do {
         tok = lex.lexical_scan(br);
         System.out.println("Scan: " + tok);
       } while (tok.tag != Tag.EOF);
+
       br.close();
     } catch (IOException e) {
       e.printStackTrace();
