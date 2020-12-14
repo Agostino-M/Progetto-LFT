@@ -144,8 +144,7 @@ public class Valutatore {
 
       // <fact> → <expr>
       case Tag.NUM:
-        NumberTok NUM_value = (NumberTok) look;
-        fact_val = NUM_value.numLexeme;
+        fact_val = ((NumberTok) look).numLexeme;
         match(Tag.NUM);
 
         break;
