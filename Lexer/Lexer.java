@@ -21,21 +21,22 @@ public class Lexer {
       if (peek == '/') {
         readch(br);
 
-        if (peek == '/') {
-          while (peek != '\n' && peek != (char) -1) {
+        if (peek == '/') { // commento monolinea //
+          while (peek != '\n' && peek != (char) -1) { // ignoro tutto fino alla fine della riga o del file
             readch(br);
           }
-        } else if (peek == '*') {
-          while (peek != (char) -1) {
+        } else if (peek == '*') { // commento multilinea
+          boolean close = false;
+          while (peek != (char) -1 && !close) { // ignoro tutto fino a EOF o quando viene chiuso il commento
             readch(br);
-            if (peek == '*') {
+            while (peek == '*') { // se trovo un *, ciclo finché ne trovo altri
               readch(br);
               if (peek == '/')
-                break;
+                close = true;
             }
           }
           if (peek == (char) -1) {
-            System.err.println("Multi line comment never got closed.");
+            System.err.println("Error: Multi line comment never got closed.");
             return null;
           }
 
@@ -85,7 +86,6 @@ public class Lexer {
         return Token.mult;
 
       case '/':
-
         peek = ' ';
         return Token.div;
 
@@ -148,21 +148,20 @@ public class Lexer {
         if (Character.isLetter(peek) || peek == '_') {
           // Caso degli identificatori e delle parole chiave
           String words = "";
-          while (peek == '_') {
+          while (peek == '_') {// controllo se sono solo underscore
             words += "_";
             readch(br);
-            if (peek == (char) -1 || peek == ' ' || peek == '\t' || peek == '\n' || peek == '\r' || peek < 32
-                || peek > 126) {
+            if (!Character.isDigit(peek) && !Character.isLetter(peek)) { // ho letto solo underscore
               System.err.println("Erroneous character" + " after _ : " + peek);
               return null;
             }
           }
 
-          while (Character.isLetter(peek) || Character.isDigit(peek) || peek == '_') {
+          while (Character.isLetter(peek) || Character.isDigit(peek) || peek == '_') { // leggiamo lettere, numeri o _
             words += peek;
             readch(br);
           }
-          switch (words) {
+          switch (words) { // caso delle parole chiave
             case "cond":
               return Word.cond;
             case "when":
@@ -190,7 +189,7 @@ public class Lexer {
           if (peek == '0') {
             readch(br);
 
-            if (!Character.isDigit(peek)) {
+            if (!Character.isDigit(peek)) { // ho letto solo 0
               return new NumberTok(Tag.NUM, 0);
             } else {
               System.err.println("Erroneous character" + " after 0 : " + peek);
@@ -198,8 +197,9 @@ public class Lexer {
             }
           }
 
+          // non inizia per 0
           String number = "" + peek;
-          while (Character.isDigit(peek)) {
+          while (Character.isDigit(peek)) { // leggiamo i numeri
             readch(br);
             if (Character.isDigit(peek)) {
               number += peek;
@@ -208,7 +208,7 @@ public class Lexer {
             }
           }
 
-        } else {
+        } else { // caratteri speciali non riconosciuti
           System.err.println("Erroneous character: " + peek);
           return null;
         }
@@ -219,7 +219,7 @@ public class Lexer {
   public static void main(String[] args) {
     Lexer lex = new Lexer();
     // il percorso del file da leggere
-    String path = "Input.txt";
+    String path = "Input.lft";
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));

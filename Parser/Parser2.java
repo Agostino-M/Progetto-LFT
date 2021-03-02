@@ -60,7 +60,7 @@ public class Parser2 {
 
   private void statlistp() { // Slp
     switch (look.tag) {
-      // <statlistp> → <stat> <statlistp>
+      // <statlistp> → ; <stat> <statlistp>
       case ';':
         match(';');
         stat();
@@ -85,7 +85,7 @@ public class Parser2 {
         expr();
         break;
 
-      // <stat> → print(<expr>)
+      // <stat> → print(<exprlist>)
       case Tag.PRINT:
         match(Tag.PRINT);
         match('(');
@@ -241,7 +241,7 @@ public class Parser2 {
   private void exprlist() { // El
     switch (look.tag) {
       // <exprlist> → <expr> <exprlistp>
-      case '+', '-', '/', Tag.NUM, Tag.ID:
+      case '+', '-', '/', '*', Tag.NUM, Tag.ID:
         expr();
         exprlistp();
         break;
@@ -271,7 +271,7 @@ public class Parser2 {
   public static void main(String[] args) {
     Lexer lex = new Lexer();
     // il percorso del file da leggere
-    String path = "Input.txt";
+    String path = "Input.lft";
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));
